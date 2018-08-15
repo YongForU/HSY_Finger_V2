@@ -66,6 +66,7 @@ public class Fingerprint {
 
     public static void setNumPassword(String numPassword){
 
+        //设置密码
         PreferenceUtil.commitString(Constants.PASSWORD,numPassword);
 
     }
