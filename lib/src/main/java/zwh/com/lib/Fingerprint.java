@@ -64,6 +64,12 @@ public class Fingerprint {
     private static ProgressDialog mLoadingDialog = null;
     private static String rt_msg;
 
+    public static void setNumPassword(String numPassword){
+
+        PreferenceUtil.commitString(Constants.PASSWORD,numPassword);
+
+    }
+
     public static void FingerprintVail(final Context mContext, final FingerPrinterView fingerPrinterView, final FingerprintCallback fingerprintCallback) {
 
         mCustomFingerprintView = LayoutInflater.from(mContext).inflate(R.layout.fingerprint_layout, null);
@@ -149,21 +155,22 @@ public class Fingerprint {
 
 
 
-    private static void doPrepareAuthKey(final Context mContext, final IOnAuthKeyPrepared onAuthKeyPreparedCallback) {
-        showPasswordInputDialog(mContext,new IOnConfirmedPassword() {
-            @Override
-            public void onConfirmPassword(final String pwdDigest) {
-                // We strongly recommend you to use password to open any fingerprint related business scene.
-                // e.g., payment password/pin to open fingerprint
-                showLoading(mContext,mContext.getString(R.string.app_loading_preparing_open_keys));
-                prepareAuthKey(pwdDigest, onAuthKeyPreparedCallback);
-            }
-        }, new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-//                DemoLogger.i("---", "soterdemo: user cancelled open in input");
-            }
-        });
+    private static void doPrepareAuthKey(final Context mContext,String num, final IOnAuthKeyPrepared onAuthKeyPreparedCallback) {
+//        showPasswordInputDialog(mContext,new IOnConfirmedPassword() {
+//            @Override
+//            public void onConfirmPassword(final String pwdDigest) {
+//                // We strongly recommend you to use password to open any fingerprint related business scene.
+//                // e.g., payment password/pin to open fingerprint
+//
+//            }
+//        }, new DialogInterface.OnCancelListener() {
+//            @Override
+//            public void onCancel(DialogInterface dialog) {
+////                DemoLogger.i("---", "soterdemo: user cancelled open in input");
+//            }
+//        });
+        showLoading(mContext,mContext.getString(R.string.app_loading_preparing_open_keys));
+        prepareAuthKey(num, onAuthKeyPreparedCallback);
     }
 
     private static void prepareAuthKey(final String pwdDigest, final IOnAuthKeyPrepared callback) {
@@ -230,7 +237,8 @@ public class Fingerprint {
 
 
     private static void startPrepareAuthKeyAndAuthenticate(final Context mContext,final FingerprintCallback fingerprintCallback) {
-        doPrepareAuthKey(mContext,new IOnAuthKeyPrepared() {
+        String num = PreferenceUtil.getString(Constants.PASSWORD,"");
+        doPrepareAuthKey(mContext,num,new IOnAuthKeyPrepared() {
             @Override
             public void onResult(String passwordDigestUsed, boolean isSuccess) {
                 if (isSuccess) {
