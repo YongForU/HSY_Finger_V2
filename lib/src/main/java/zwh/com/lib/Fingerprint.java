@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -156,7 +157,7 @@ public class Fingerprint {
 
 
 
-    private static void doPrepareAuthKey(final Context mContext,String num, final IOnAuthKeyPrepared onAuthKeyPreparedCallback) {
+    private static void doPrepareAuthKey(final Context mContext, String num, final IOnAuthKeyPrepared onAuthKeyPreparedCallback) {
 //        showPasswordInputDialog(mContext,new IOnConfirmedPassword() {
 //            @Override
 //            public void onConfirmPassword(final String pwdDigest) {
@@ -237,7 +238,7 @@ public class Fingerprint {
 
 
 
-    private static void startPrepareAuthKeyAndAuthenticate(final Context mContext,final FingerprintCallback fingerprintCallback) {
+    private static void startPrepareAuthKeyAndAuthenticate(final Context mContext, final FingerprintCallback fingerprintCallback) {
         String num = PreferenceUtil.getString(Constants.PASSWORD,"");
         doPrepareAuthKey(mContext,num,new IOnAuthKeyPrepared() {
             @Override
@@ -268,7 +269,7 @@ public class Fingerprint {
         });
     }
 
-    private static void startNormalPasswordAuthentication(final Context mContext,final FingerprintCallback fingerprintCallback) {
+    private static void startNormalPasswordAuthentication(final Context mContext, final FingerprintCallback fingerprintCallback) {
         showPasswordInputDialog(mContext,new IOnConfirmedPassword() {
             @Override
             public void onConfirmPassword(final String pwdDigest) {
@@ -305,13 +306,6 @@ public class Fingerprint {
     private static void doCloseFingerprintPayment(Context mContext) {
         SoterWrapperApi.removeAuthKeyByScene(ConstantsSoterDemo.SCENE_PAYMENT);
         SoterDemoData.getInstance().setIsFingerprintPayOpened(mContext, false);
-    }
-    private static void stop_Finger(){
-        cancelFingerprintAuthentication();
-        // 建议在onPause的时候结束掉SOTER相关事件。当然，也可以选择自己管理，但是会更加复杂
-        SoterWrapperApi.tryStopAllSoterTask();
-        dismissCurrentDialog();
-        dismissLoading();
     }
 
 
@@ -370,7 +364,15 @@ public class Fingerprint {
                     // Fingerprint state callbacks are only used for updating UI. Any logic operation is not welcomed.
                     @Override
                     public void onStartAuthentication() {
-//                        DemoLogger.d("---", "soterdemo: start authentication. dismiss loading");
+
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                dismissLoading();
+//
+//                            }
+//                        }).start();
+
                         dismissLoading();
                         showFingerprintDialog(mContext,title);
                     }
@@ -477,10 +479,18 @@ public class Fingerprint {
     }
 
     private static void dismissLoading() {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-            mLoadingDialog.dismiss();
-        }
+
+
+        new Thread(new Runnable() { @Override public void run() { Looper.prepare();
+            if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+                mLoadingDialog.dismiss();
+            }
+            Looper.loop(); } });
+
+
     }
+
+
 
     private interface IOnConfirmedPassword {
         void onConfirmPassword(String pwdDigest);
