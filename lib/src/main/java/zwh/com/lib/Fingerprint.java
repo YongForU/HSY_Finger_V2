@@ -137,12 +137,12 @@ public class Fingerprint {
                 rxfingerPrinter.addDispose(observer);
             }else {  //soter
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
                         doUseFingerprintPayment(mContext,fingerprintCallback);
-                    }
-                },1000);
+//                    }
+//                },1000);
 
             }
 
@@ -316,7 +316,7 @@ public class Fingerprint {
         builder.setTitle(mContext.getString(R.string.input_pay_password));
         final EditText input = new EditText(mContext);
         input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});  //密码长度
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
         input.setHint("请输入6位数字密码");
         builder.setView(input);
         builder.setPositiveButton(mContext.getString(R.string.app_confirm), new DialogInterface.OnClickListener() {
@@ -481,11 +481,9 @@ public class Fingerprint {
     private static void dismissLoading() {
 
 
-        new Thread(new Runnable() { @Override public void run() { Looper.prepare();
             if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
                 mLoadingDialog.dismiss();
             }
-            Looper.loop(); } });
 
 
     }
