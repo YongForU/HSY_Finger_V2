@@ -277,6 +277,7 @@ public class Fingerprint {
                     @Override
                     public void onPayEnd(boolean isSuccess) {
                         dismissLoading();
+                        String i = PreferenceUtil.getString(Constants.PASSWORD,"");
                         if(PreferenceUtil.getString(Constants.PASSWORD,"").equals(pwdDigest)){
                             fingerprintCallback.success();
 
@@ -332,7 +333,7 @@ public class Fingerprint {
                        String pwdText = input.getText().toString();
 
                        onConfirm.onConfirmPassword(!DemoUtil.isNullOrNil(pwdText)
-                               ? DemoUtil.calcPwdDigest(pwdText) : null);
+                               ? pwdText : null);
                    }
                }
             }
